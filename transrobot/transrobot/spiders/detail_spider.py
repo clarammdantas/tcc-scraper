@@ -10,13 +10,15 @@ from selenium.webdriver.support.ui import Select
 
 from transrobot.items import PaymentDetailedItem
 
-class PaymentsSpider(scrapy.Spider):
+class DetailSpider(scrapy.Spider):
     name = "detail"
     total = 300
 
-    def __init__(self):
+    def __init__(self, page, *args, **kwargs):
+        super(DetailSpider, self).__init__(page, *args, **kwargs)
         self.driver = webdriver.Firefox()
         self.driver.maximize_window()
+        self.page = page
 
     def start_requests(self):
         response = scrapy.Request(
@@ -67,7 +69,8 @@ class PaymentsSpider(scrapy.Spider):
         input_total_pages.send_keys(str(total_per_page))
         view_total_elements = self.driver.find_element_by_xpath("//*[@id='qtlin_bot']")
         view_total_elements.click()
-        time.sleep(60)
+        # WebDriverWait(self.driver, 65).until(EC.presence_of_element_located((By.ID, 'rec_f0_bot')))
+        time.sleep(65)
 
         input_go_to_page = self.driver.find_element_by_id("rec_f0_bot")
         input_go_to_page.clear()
@@ -101,6 +104,7 @@ class PaymentsSpider(scrapy.Spider):
                 row_id = row.get_attribute("id")
                 WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable((By.XPATH, f'//*[@id="{row_id}"]/td[2]')))
 
+                payment_item['id_empenho'] = self.driver.find_element_by_class_name("css_empenho_grid_line").text
                 link_detalhamento = self.driver.find_element_by_xpath(f'//*[@id="{row_id}"]/td[2]')
                 self.driver.execute_script("arguments[0].scrollIntoView({ block: 'nearest'});", link_detalhamento)
                 link_detalhamento.click()

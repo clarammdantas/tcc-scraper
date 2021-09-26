@@ -20,6 +20,7 @@ class PaymentItem(Item):
     valor = Field()
 
 class PaymentDetailedItem (Item):
+    id_empenho = Field()
     tipo = Field()
     num_empenho = Field()
     tipo_empenho = Field()
