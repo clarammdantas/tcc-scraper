@@ -71,10 +71,11 @@ class PaymentsSpider(scrapy.Spider):
 
         input_go_to_page = self.driver.find_element_by_id("rec_f0_bot")
         input_go_to_page.clear()
-        input_go_to_page.send_keys(str(2))
+        input_go_to_page.send_keys(str(self.page))
         go_to_page = self.driver.find_element_by_xpath("//*[@id='brec_bot']")
         go_to_page.click()
-        time.sleep(50)
+        time.sleep(40)
+        self.driver.execute_script("window.scrollTo({ top: 0 });")
 
         gen = self.generate_items()
         for item in gen:
@@ -109,10 +110,10 @@ class PaymentsSpider(scrapy.Spider):
                 new_window = [window for window in self.driver.window_handles if window != current][0]
 
                 self.driver.switch_to.window(new_window)
-                time.sleep(2)
+                WebDriverWait(self.driver, 7).until(EC.presence_of_element_located((By.ID, "id_sc_field_numeroemp_1")))
 
-                empenho_num = self.driver.find_element_by_xpath("//*[@id='consultaEmpenhoDetalhada_hidden_bloco_0_1']/tbody/tr/td/table/tbody/tr[8]/td").text
-                payment_item['num_empenho'] = empenho_num.split(' ')[-1]
+                empenho_num = self.driver.find_element_by_xpath("//*[@id='id_sc_field_numeroemp_1']/span").text
+                payment_item['num_empenho'] = empenho_num.split(':')[-1].strip()
 
                 tipo_empenho = self.driver.find_element_by_xpath("//*[@id='id_sc_field_empenhotipo_1']/span").text
                 payment_item['tipo_empenho'] = tipo_empenho.split(':')[-1].strip()
