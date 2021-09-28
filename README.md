@@ -36,9 +36,11 @@ $ cd transbot/
 Para executar o Spider payments, faça:
 
 ```
-scrapy crawl payments -o payments.csv
+scrapy crawl payments -o payments.csv -a page=2
 ```
 
 O comando acima irá executar o spider e em seguida gerar um arquivo csv
-(de nome payments.csv) com os dados extraídos da página. Para executar o spider
-detail é só usar o mesmo comando acima, substituindo payments por detail.
+(de nome payments.csv) com os dados extraídos da página. Como ambos os spiders
+são executados em buckets, passamos o argumento page para determinar qual
+bucket deve ser extraído. Para executar o spider detail é só usar o mesmo
+comando acima, substituindo payments por detail.
