@@ -1,4 +1,5 @@
 import glob
+import csv
 
 # 1. merge files by group (payments or details)
 def merge_details():
@@ -55,20 +56,26 @@ def merge_details_and_payments():
                         payment_values = line.rstrip().split(',')
 
                         # 1 = empenho, 2 = favorecido
-                        id = payment_values[1] + payment_values[2]
+                        empenho = payment_values[1].split('NE')[-1]
+                        # Remove trailling 0
+                        payment_id = str(int(empenho)) + payment_values[2]
                         value = ['NA' for i in range(22)]
                         value = ','.join(value)
                         value += '\n'
+                        details_line = 1
 
-                        for line_detail in details_file:
-                            details_values = line_detail.split(',')
+                        details_csv = csv.reader(details_file, delimiter=',', quotechar='"')
+                        for line_detail in details_csv:
+                            if details_line == 1:
+                                details_line += 1
+                                continue
 
-                            # nome_razao_social = 13, id_empenho = 9
-                            detail_id = details_values[9] + details_values[13]
-                            if id == detail_id:
-                                value = line_detail
-                                break
+                            detail_id = str(int(line_detail[14])) + line_detail[13]
+                            if payment_id == detail_id:
+                                    value = ','.join(line_detail)
+                                    break
+                            
 
-                        new_file.write(line.rstrip() + ',' + value)
+                        new_file.write(line.rstrip() + ',' + value + '\n')
 
 merge_details_and_payments()
